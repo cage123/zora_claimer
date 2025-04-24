@@ -60,6 +60,9 @@ class Zora:
                 return True
             else:
                 logger.error(f'{self.address} | Claim tx failed')
+        
+        self.allocation = 0 # if failed to claim
+        return False
 
     def send_zora(self):
         for _ in range(config['RETRY_COUNT']):
@@ -92,6 +95,7 @@ class Zora:
                     logger.error(f'{self.address} | Send tx failed')
             else:
                 logger.info(f'{self.address}: No $ZORA on wallet')
+                return
 
     def check_zora_balance(self):
         balance = self.zora_contract.functions.balanceOf(self.address).call()
@@ -107,6 +111,7 @@ class Zora:
             
             if result > 0:
                 logger.success(f'{self.address}: Have {result} $ZORA not claimed yet')
+                self.allocation = allocation
                 return True
             else:
                 logger.error(f'{self.address}: not eligible')
